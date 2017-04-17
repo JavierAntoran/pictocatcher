@@ -8,10 +8,39 @@ arasac_file = "./arasac_files.txt"
 imagenet_struct = "./imagenet_synset_structure.xml"
 
 def main():
-    global cursor
+    global con
 
     con = sqlite3.connect('./synset.sqlite')
 
+    import_synsets()
+
+    synset_matcher()
+
+    con.close()
+
+def synset_matcher():
+    ara_cursor = con.cursor()
+    imgnet_cursor = con.cursor()
+    write_cursor = con.cursor()
+
+    ara_cursor.execute("SELECT * FROM arasac_synset")
+    print "Begin synset matching..."
+
+    for ara_id, ara_word in ara_cursor:
+        imgnet_cursor.execute("SELECT id, word FROM imagenet_synset WHERE word LIKE ?", (ara_word,))
+        for imgnet_id, imgnet_word in imgnet_cursor:
+            write_cursor.execute(
+                'INSERT INTO synset_matches (arasac_id, imgnet_id) VALUES (%d, %d)'
+                % (ara_id, imgnet_id))
+        print('Matching arasac synset %d:"%s"' % (ara_id, ara_word))
+
+    con.commit()
+    print "Synset matching finished"
+    write_cursor.close()
+    imgnet_cursor.close()
+    ara_cursor.close()
+
+def import_synsets():
     cursor = con.cursor()
 
     print "Creating database ..."
@@ -21,18 +50,18 @@ def main():
     cursor.execute('''DROP TABLE IF EXISTS synset_matches''')
 
     cursor.execute('''
-            CREATE TABLE arasac_synset (id INTEGER PRIMARY KEY, word TEXT UNIQUE ON CONFLICT IGNORE)
-    ''')
+                CREATE TABLE arasac_synset (id INTEGER PRIMARY KEY, word TEXT UNIQUE ON CONFLICT IGNORE)
+        ''')
 
     cursor.execute('''
-            CREATE TABLE imagenet_synset (id INTEGER PRIMARY KEY, wnid TEXT, pnid TEXT, word TEXT)
-    ''')
+                CREATE TABLE imagenet_synset (id INTEGER PRIMARY KEY, wnid TEXT, pnid TEXT, word TEXT)
+        ''')
 
     cursor.execute('''
-            CREATE TABLE synset_matches(imgnet_id INTEGER, arasac_id INTEGER)
-    ''')
+                CREATE TABLE synset_matches(arasac_id INTEGER, imgnet_id INTEGER)
+        ''')
 
-    print("Import arasac_synset ...")
+    print('Import arasac_synset ...')
     # Import arasac synset
     f = open(arasac_file)
 
@@ -44,9 +73,9 @@ def main():
 
     cursor.execute("SELECT * FROM arasac_synset")
 
-    print "Import arasac_synset finished"
+    print('Import arasac_synset finished')
 
-    print("Import imagenet synset ...")
+    print('Import imagenet_synset ...')
     # Import imagenet synset
     root = ET.parse(imagenet_struct).getroot()
     begin = root.findall("./synset")
@@ -54,14 +83,13 @@ def main():
     for child in begin:
         synset_parse(child, None)
 
-    print "Import imagenet_synset finished"
+    print('Import imagenet_synset finished')
 
     con.commit()
     cursor.close()
-    con.close()
 
 def synset_parse(ele, pnid):
-
+    cursor = con.cursor()
     words = [word.strip().lower() for word in ele.get('words').split(",")]
     wnid = ele.get('wnid')
 
@@ -69,6 +97,8 @@ def synset_parse(ele, pnid):
         cursor.execute(
             'INSERT INTO imagenet_synset (wnid, pnid, word) VALUES ("%s", %s, "%s")'
             % (wnid, ('"%s"' % pnid) if pnid else "NULL", word))
+
+    cursor.close()
 
     children = ele.findall("./synset")
 
