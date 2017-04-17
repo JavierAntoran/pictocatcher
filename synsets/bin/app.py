@@ -1,15 +1,19 @@
 import web
+import sqlite3
+
 
 urls = (
-  '/', 'index'
+  '/', 'Index'
 )
 
 app = web.application(urls, globals())
+render = web.template.render('templates/', base='layout')
 
-class index:
+class Index:
     def GET(self):
-        greeting = "Hello World"
-        return greeting
+        greeting='foo'
+
+        return render.index(greeting=greeting)
 
 if __name__ == "__main__":
     app.run()
