@@ -54,7 +54,8 @@ def import_synsets():
         ''')
 
     cursor.execute('''
-                CREATE TABLE imagenet_synset (id INTEGER PRIMARY KEY, wnid TEXT, pnid TEXT, word TEXT)
+                CREATE TABLE imagenet_synset (id INTEGER PRIMARY KEY, wnid TEXT, pnid TEXT, word TEXT, 
+                CONSTRAINT wnid_word UNIQUE (wnid, pnid) ON CONFLICT IGNORE)
         ''')
 
     cursor.execute('''
