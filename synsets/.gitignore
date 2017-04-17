@@ -1,1 +1,3 @@
 *.pyc
+
+./static/arasac_en_colored_pictograms/*.png
