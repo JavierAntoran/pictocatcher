@@ -1,35 +1,46 @@
-$def with (content)
-
 <html>
 <head>
     <title>Synset Matcher UI</title>
-    <link rel="stylesheet" href="./static/css/material.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <!-- Material Design fonts -->
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Roboto:300,400,500,700">
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/icon?family=Material+Icons">
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <!-- Bootstrap Material Design -->
+    <link rel="stylesheet" type="text/css" href="./static/css/bootstrap-material-design.min.css">
+    <link rel="stylesheet" type="text/css" href="./static/css/ripples.min.css">
+    <link rel="stylesheet" type="text/css" href="./static/css/bootstrap-treeview.min.css">
     <link rel="stylesheet" href="./static/css/styles.css">
 </head>
 <body>
-<div class="demo-layout mdl-layout mdl-layout--fixed-header mdl-js-layout mdl-color--grey-100">
-  <header class="demo-header mdl-layout__header mdl-layout__header--scroll mdl-color--grey-100 mdl-color-text--grey-800">
-    <div class="mdl-layout__header-row">
-      <span class="mdl-layout-title">Synset Matcher UI</span>
-      <div class="mdl-layout-spacer"></div>
-    </div>
-  </header>
-  <div class="demo-ribbon"></div>
-  <main class="demo-main mdl-layout__content">
-$:content
-    <footer class="demo-footer mdl-mini-footer">
-      <div class="mdl-mini-footer--left-section">
-        <ul class="mdl-mini-footer--link-list">
-          <li><a href="#">Help</a></li>
-          <li><a href="#">Privacy and Terms</a></li>
-          <li><a href="#">User Agreement</a></li>
-        </ul>
+    <div class="header-panel shadow-z-2">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-xs-4">
+            <h1>Synset Matcher UI</h1>
+          </div>
+          <div class="col-xs-1 col-xs-offset-6">
+          <a target="_blank" href="./static/imagenet_synset_structure.xml" type="button" class="btn btn-raised">
+            <i class="material-icons">visibility</i> Wordnet Synset</a>
+          </div>
+        </div>
       </div>
-    </footer>
-  </main>
-</div>
+    </div>
+    <div class="container main">
+{% block content %}{% endblock %}
+    </div>
 
-<script src="./static/js/material.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.9.1.min.js"
+      integrity="sha256-wS9gmOZBqsqWxgIVgA8Y9WcQOa7PgSIX+rPA0VL2rbQ="
+      crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script src="./static/js/material.min.js"></script>
+
+    <script src="./static/js/ripples.min.js"></script>
+    <script src="./static/js/bootstrap-treeview.min.js"></script>
+
+{% block inlineJS %}{% endblock %}
 </body>
 </html>
