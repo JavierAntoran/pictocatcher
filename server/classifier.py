@@ -1,6 +1,5 @@
 # image classifier class
 
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -21,10 +20,13 @@ FLAGS = None
 DATA_URL = 'http://download.tensorflow.org/models/image/imagenet/inception-2015-12-05.tgz'
 
 
+
+
 class NodeLookup(object):
   """Converts integer node ID's to human readable labels."""
 
   node_id_to_wnid = {}
+  node_lookup = {}
 
   def __init__(self,
                label_lookup_path=None,
@@ -35,8 +37,9 @@ class NodeLookup(object):
     if not uid_lookup_path:
       uid_lookup_path = os.path.join(
           FLAGS.model_dir, 'imagenet_synset_to_human_label_map.txt')
-    self.node_lookup = self.load(label_lookup_path, uid_lookup_path)
 
+    if NodeLookup.node_lookup is not None:
+        NodeLookup.node_lookup = self.load(label_lookup_path, uid_lookup_path)
 
   def load(self, label_lookup_path, uid_lookup_path):
     """Loads a human readable English name for each softmax node.
@@ -80,19 +83,19 @@ class NodeLookup(object):
         tf.logging.fatal('Failed to locate: %s', val)
       name = uid_to_human[val]
       node_id_to_name[key] = name
-      self.node_id_to_wnid[key] = val
+      NodeLookup.node_id_to_wnid[key] = val
 
     return node_id_to_name
 
   def id_to_wnid(self, node_id):
-      if node_id not in self.node_id_to_wnid:
+      if node_id not in NodeLookup.node_id_to_wnid:
           return ''
-      return self.node_id_to_wnid[node_id]
+      return NodeLookup.node_id_to_wnid[node_id]
 
   def id_to_string(self, node_id):
-    if node_id not in self.node_lookup:
+    if node_id not in NodeLookup.node_lookup:
       return ''
-    return self.node_lookup[node_id]
+    return NodeLookup.node_lookup[node_id]
 
 def create_graph():
   """Creates a graph from saved GraphDef file and returns a saver."""
@@ -127,15 +130,13 @@ def run_inference_on_image(image):
                            {'DecodeJpeg/contents:0': image_data})
     predictions = np.squeeze(predictions)
 
-    # Creates node ID --> English string lookup.
-    node_lookup = NodeLookup()
-
     top_k = predictions.argsort()[-FLAGS.num_top_predictions:][::-1]
     for node_id in top_k:
-        #MAKE CHANGES HERE
-        human_string = node_lookup.id_to_string(node_id)
+        NODE_FINDER = NodeLookup()
+
+        human_string = NODE_FINDER.id_to_string(node_id)
         score = predictions[node_id]
-        wnid = node_lookup.id_to_wnid(node_id)
+        wnid = NODE_FINDER.id_to_wnid(node_id)
         print('node: %s, %s (score = %.5f)' % (wnid, human_string, score))
 
 def maybe_download_and_extract():
@@ -157,6 +158,7 @@ def maybe_download_and_extract():
   tarfile.open(filepath, 'r:gz').extractall(dest_directory)
 
 def classify(target_img):
+
 
     FLAGS.model_dir = './tensorflow/model'
 
