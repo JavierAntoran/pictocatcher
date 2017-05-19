@@ -25,10 +25,23 @@ class Classifier(object):
     graph_created = False
 
     def __init__(self):
-        pass
 
-    @staticmethod
-    def create_graph():
+        global FLAGS
+
+        if FLAGS is None:
+            FLAGS = {}
+            FLAGS.num_top_predictions = 20
+
+        FLAGS.model_dir = './tensorflow/model'
+
+        if FLAGS.num_top_predictions is None:
+            FLAGS.num_top_predictions = 20
+
+        if not Classifier.graph_created:
+            self.create_graph()
+            Classifier.graph_created = True
+
+    def create_graph(self):
       """Creates a graph from saved GraphDef file and returns a saver."""
       # Creates graph from saved graph_def.pb.
       with tf.gfile.FastGFile(os.path.join(
@@ -37,8 +50,7 @@ class Classifier(object):
         graph_def.ParseFromString(f.read())
         _ = tf.import_graph_def(graph_def, name='')
 
-    @staticmethod
-    def run_inference_on_image(image):
+    def run_inference_on_image(self, image):
       """Runs inference on an image.
 
       Args:
@@ -92,29 +104,15 @@ class Classifier(object):
       tarfile.open(filepath, 'r:gz').extractall(dest_directory)
 
     @staticmethod
-    def classify(target_img):
+    def classify(self, target_img):
 
         global FLAGS
 
-        if FLAGS is None:
-            FLAGS = {}
+        if FLAGS.image_file is None:
             FLAGS.image_file = target_img
-            FLAGS.num_top_predictions = 20
-
-        FLAGS.model_dir = './tensorflow/model'
-
-        if FLAGS.num_top_predictions is None:
-            FLAGS.image_file = target_img
-
-        if FLAGS.num_top_predictions is None:
-            FLAGS.num_top_predictions = 20
-
-        if not Classifier.graph_created:
-            Classifier.create_graph()
-            Classifier.graph_created = True
 
         image = (FLAGS.image_file)
-        Classifier.run_inference_on_image(image)
+        self.run_inference_on_image(image)
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
@@ -132,6 +130,7 @@ if __name__ == '__main__':
       help='Display this many predictions.'
   )
   FLAGS, unparsed = parser.parse_known_args()
-  tf.app.run(main=Classifier.classify, argv=[sys.argv[0]])
+  a = Classifier()
+  Classifier.classify(a, FLAGS.image_file)
 
 
