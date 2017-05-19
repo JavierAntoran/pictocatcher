@@ -26,7 +26,7 @@ class NodeLookup(object):
   """Converts integer node ID's to human readable labels."""
 
   node_id_to_wnid = {}
-  node_lookup = {}
+  node_name_lookup = None
 
   def __init__(self,
                label_lookup_path=None,
@@ -38,10 +38,11 @@ class NodeLookup(object):
       uid_lookup_path = os.path.join(
           FLAGS.model_dir, 'imagenet_synset_to_human_label_map.txt')
 
-    if NodeLookup.node_lookup is not None:
-        NodeLookup.node_lookup = self.load(label_lookup_path, uid_lookup_path)
+    if NodeLookup.node_name_lookup is None:
+        NodeLookup.node_name_lookup = NodeLookup.load(label_lookup_path, uid_lookup_path)
 
-  def load(self, label_lookup_path, uid_lookup_path):
+  @staticmethod
+  def load(label_lookup_path, uid_lookup_path):
     """Loads a human readable English name for each softmax node.
 
     Args:
@@ -93,9 +94,9 @@ class NodeLookup(object):
       return NodeLookup.node_id_to_wnid[node_id]
 
   def id_to_string(self, node_id):
-    if node_id not in NodeLookup.node_lookup:
+    if node_id not in NodeLookup.node_name_lookup:
       return ''
-    return NodeLookup.node_lookup[node_id]
+    return NodeLookup.node_name_lookup[node_id]
 
 def create_graph():
   """Creates a graph from saved GraphDef file and returns a saver."""
