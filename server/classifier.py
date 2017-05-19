@@ -5,12 +5,14 @@ from __future__ import division
 from __future__ import print_function
 
 import node_lookup
+import picto_matcher
 
 import argparse
 import os.path
 import sys
 import tarfile
 
+import web
 import numpy as np
 from six.moves import urllib
 import tensorflow as tf
@@ -75,13 +77,19 @@ class Classifier(object):
             predictions = np.squeeze(predictions)
 
             top_k = predictions.argsort()[-FLAGS.num_top_predictions:][::-1]
-            for node_id in top_k:
-                NODE_FINDER = node_lookup.NodeLookup(FLAGS)
+            score = {}
+            wnid = {}
+            for index, node_id in top_k:
+                node_finder = node_lookup.NodeLookup(FLAGS)
 
-                human_string = NODE_FINDER.id_to_string(node_id)
-                score = predictions[node_id]
-                wnid = NODE_FINDER.id_to_wnid(node_id)
-                print('node: %s, %s (score = %.5f)' % (wnid, human_string, score))
+                human_string = node_finder.id_to_string(node_id)
+                score[index] = predictions[node_id]
+                wnid[index] = node_finder.id_to_wnid(node_id)
+                print('node: %s, %s (score = %.5f)' %
+                      (wnid[index], human_string, score[index]))
+
+            return {wnid, score}
+
 
     @staticmethod
     def maybe_download_and_extract():
@@ -111,7 +119,8 @@ class Classifier(object):
             FLAGS.image_file = target_img
 
         image = (FLAGS.image_file)
-        self.run_inference_on_image(image)
+        return self.run_inference_on_image(image)
+
 
 
 if __name__ == '__main__':
@@ -131,4 +140,13 @@ if __name__ == '__main__':
     )
     FLAGS, unparsed = parser.parse_known_args()
     a = Classifier()
-    a.classify(FLAGS.image_file)
+    result_mtx = a.classify(FLAGS.image_file)
+    wnids = result_mtx[0]
+    scores = result_mtx[1]
+
+    db_file = './database/synset.sqlite3'
+
+    db = web.database(dbn='sqlite', db=db_file)
+
+    matcher = picto_matcher.PictoMatcher(db, None, 0.2)
+    print matcher.match(wnids, scores)
