@@ -17,29 +17,36 @@ dbi = web.database(dbn='sqlite', db=db_file)
 class PictoMatcher(object):
 
     def __init__(self, db, picto_wNid, thresh):
-        pass
+        self.db = db
+        self.picto_wNid = picto_wNid
+        self. thresh = thresh
+        self.db.printing = False
 
     def match(self, result_wNid, result_weights):
 
-        N_results = len(result_wNid)
         prob = 0
 
-        for n_id, id in result_wNid:
+        for id in result_wNid:
 
-            next_id = id
-            while pnid != self.pictowNid and pnid is not None:
+            next_id = result_wNid[id]
+            pnid = 0
+            while pnid != self.picto_wNid and pnid is not None:
 
                 matches = self.db.query('''
-                                    SELECT pnid FROM imagenet_synset WHERE wnid = $id''', vars={'id': next_id})
-                pnid = np.unique(matches)
+                                    SELECT pnid FROM imagenet_synset WHERE wnid = $wnid''', vars={'wnid': next_id})
 
-                if len(pnid) != 1:
+                pnids = set()
+                for match in matches:
+                    pnids.add(match.pnid)
+
+                if len(pnids) != 1:
                     print 'Multiple parents or no parents error: selecting first match'
-                    pnid = pnid[0]
+
+                pnid = pnids.pop()
                 next_id = pnid
 
             if pnid is not None:
-                prob += result_weights[n_id]
+                prob += result_weights[id]
 
         return prob >= self.thresh
 
