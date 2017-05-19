@@ -3,28 +3,36 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
-import os.path
-import re
 
 import tensorflow as tf
+import os.path
+import re
 
 
 class NodeLookup(object):
   """Converts integer node ID's to human readable labels."""
 
+  node_id_to_wnid = {}
+  node_name_lookup = None
+  FLAGS = None
+
   def __init__(self,
                FLAGS,
                label_lookup_path=None,
                uid_lookup_path=None):
+    NodeLookup.FLAGS = FLAGS
     if not label_lookup_path:
       label_lookup_path = os.path.join(
           FLAGS.model_dir, 'imagenet_2012_challenge_label_map_proto.pbtxt')
     if not uid_lookup_path:
       uid_lookup_path = os.path.join(
           FLAGS.model_dir, 'imagenet_synset_to_human_label_map.txt')
-    self.node_lookup = self.load(label_lookup_path, uid_lookup_path)
 
-  def load(self, label_lookup_path, uid_lookup_path):
+    if NodeLookup.node_name_lookup is None:
+        NodeLookup.node_name_lookup = NodeLookup.load(label_lookup_path, uid_lookup_path)
+
+  @staticmethod
+  def load(label_lookup_path, uid_lookup_path):
     """Loads a human readable English name for each softmax node.
 
     Args:
@@ -66,10 +74,16 @@ class NodeLookup(object):
         tf.logging.fatal('Failed to locate: %s', val)
       name = uid_to_human[val]
       node_id_to_name[key] = name
+      NodeLookup.node_id_to_wnid[key] = val
 
     return node_id_to_name
 
+  def id_to_wnid(self, node_id):
+      if node_id not in NodeLookup.node_id_to_wnid:
+          return ''
+      return NodeLookup.node_id_to_wnid[node_id]
+
   def id_to_string(self, node_id):
-    if node_id not in self.node_lookup:
+    if node_id not in NodeLookup.node_name_lookup:
       return ''
-    return self.node_lookup[node_id]
+    return NodeLookup.node_name_lookup[node_id]
