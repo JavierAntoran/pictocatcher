@@ -79,16 +79,18 @@ class Classifier(object):
             top_k = predictions.argsort()[-FLAGS.num_top_predictions:][::-1]
             score = {}
             wnid = {}
-            for index, node_id in top_k:
+            index = 0
+            for node_id in top_k:
                 node_finder = node_lookup.NodeLookup(FLAGS)
 
                 human_string = node_finder.id_to_string(node_id)
                 score[index] = predictions[node_id]
                 wnid[index] = node_finder.id_to_wnid(node_id)
-                print('node: %s, %s (score = %.5f)' %
-                      (wnid[index], human_string, score[index]))
+                #print('node: %s, %s (score = %.5f)' %
+                      #(wnid[index], human_string, score[index]))
+                index += 1
 
-            return {wnid, score}
+            return [wnid, score]
 
 
     @staticmethod
@@ -144,9 +146,14 @@ if __name__ == '__main__':
     wnids = result_mtx[0]
     scores = result_mtx[1]
 
-    db_file = './database/synset.sqlite3'
+    db_file = './../synsets/database/synset.sqlite3'
 
     db = web.database(dbn='sqlite', db=db_file)
 
-    matcher = picto_matcher.PictoMatcher(db, None, 0.2)
-    print matcher.match(wnids, scores)
+    catnid = 'n02121808'
+
+
+
+    matcher = picto_matcher.PictoMatcher(db, catnid, 0.2)
+    var = matcher.match(wnids, scores)
+    print(var)
