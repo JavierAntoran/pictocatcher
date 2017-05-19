@@ -24,7 +24,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         // SQL statement to create book table
         // Database creation sql statement
         String PICTOCATCHER_TABLE = "CREATE TABLE pictocatcher (" +
-                "_id INTEGER PRIMARY KEY, pictoid INTEGER, word TEXT, imagename TEXT, catched INTEGER DEFAULT 0," +
+                "_id INTEGER PRIMARY KEY, pictoid INTEGER, word TEXT, imagename TEXT, caught INTEGER DEFAULT 0," +
                 "catch_date TEXT, catch_file TEXT)";
 
         // create books table
@@ -36,17 +36,22 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                 "INSERT INTO pictocatcher (pictoid, word, imagename) VALUES " +
                         "(1, 'bicicleta', 'bike.png'), " +
                         "(2, 'zanahoria', 'carrot.png'), " +
-                        "(3, 'gato', 'cat.png'), " +
+
                         "(4, 'vaso', 'glass.png'), " +
                         "(5, 'casco', 'helmets.png'), " +
                         "(6, 'oveja', 'lamb.png'), " +
                         "(7, 'farola', 'light_post.png'), " +
                         "(8, 'pincel', 'paintbrush.png'), " +
                         "(9, 'piano', 'piano.png'), " +
-                        "(10, 'portatil', 'portable.png'), " +
-                        "(11, 'boligrafo', 'writing pen.png')";
+                        "(10, 'portatil', 'portable.png') ";
 
         db.execSQL(POPULATE_DATA);
+        POPULATE_DATA =
+                "INSERT INTO pictocatcher (pictoid, word, imagename, caught,catch_date) VALUES " +
+                        "(3, 'gato', 'cat.png',1, '2017-05-10 12:31:55'), " +
+                        "(11, 'boligrafo', 'writing pen.png',1,'2017-04-20 17:41:30')";
+        db.execSQL(POPULATE_DATA);
+
 
         Log.d("DATABASE", "Database populated");
     }
@@ -64,6 +69,14 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor res = db.rawQuery("SELECT * FROM pictocatcher", null);
+
+        return res;
+    }
+
+    public Cursor getPictoById(int pictoId){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String[] args = new String[] { Integer.toString(pictoId) };
+        Cursor res = db.rawQuery("SELECT * FROM pictocatcher WHERE _id = ?", args);
 
         return res;
     }
