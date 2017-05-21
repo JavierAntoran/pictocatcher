@@ -21,6 +21,38 @@ FLAGS = None
 
 DATA_URL = 'http://download.tensorflow.org/models/image/imagenet/inception-2015-12-05.tgz'
 
+class Map(dict):
+    """
+    Example:
+    m = Map({'first_name': 'Eduardo'}, last_name='Pool', age=24, sports=['Soccer'])
+    """
+    def __init__(self, *args, **kwargs):
+        super(Map, self).__init__(*args, **kwargs)
+        for arg in args:
+            if isinstance(arg, dict):
+                for k, v in arg.iteritems():
+                    self[k] = v
+
+        if kwargs:
+            for k, v in kwargs.iteritems():
+                self[k] = v
+
+    def __getattr__(self, attr):
+        return self.get(attr)
+
+    def __setattr__(self, key, value):
+        self.__setitem__(key, value)
+
+    def __setitem__(self, key, value):
+        super(Map, self).__setitem__(key, value)
+        self.__dict__.update({key: value})
+
+    def __delattr__(self, item):
+        self.__delitem__(item)
+
+    def __delitem__(self, key):
+        super(Map, self).__delitem__(key)
+        del self.__dict__[key]
 
 class Classifier(object):
     graph_created = False
@@ -30,13 +62,10 @@ class Classifier(object):
         global FLAGS
 
         if FLAGS is None:
-            FLAGS = {}
+            FLAGS = Map()
             FLAGS.num_top_predictions = 20
 
         FLAGS.model_dir = './tensorflow/model'
-
-        if FLAGS.num_top_predictions is None:
-            FLAGS.num_top_predictions = 20
 
         if not Classifier.graph_created:
             self.create_graph()
@@ -81,7 +110,7 @@ class Classifier(object):
             wnid = {}
             index = 0
             for node_id in top_k:
-                node_finder = node_lookup.NodeLookup(FLAGS)
+                node_finder = node_lookup.NodbeLookup(FLAGS)
 
                 human_string = node_finder.id_to_string(node_id)
                 score[index] = predictions[node_id]
@@ -123,8 +152,6 @@ class Classifier(object):
         image = (FLAGS.image_file)
         return self.run_inference_on_image(image)
 
-
-
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
 
@@ -141,6 +168,7 @@ if __name__ == '__main__':
         help='Display this many predictions.'
     )
     FLAGS, unparsed = parser.parse_known_args()
+
     a = Classifier()
     result_mtx = a.classify(FLAGS.image_file)
     wnids = result_mtx[0]
