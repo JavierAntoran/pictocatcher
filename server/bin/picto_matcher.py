@@ -37,8 +37,14 @@ class PictoMatcher(object):
 
             if pnid is not None:
                 prob += result_weights[id]
+                #testing: probability correction
+                if 0 < id < 4 and result_weights[0] > 0.35:
+                    correcting_factor = 0.75/(1-result_weights[0])
+                    prob -= result_weights[id]
+                    prob += result_weights[id] * correcting_factor
 
         print ('total %: %d', prob)
+
 
         return prob >= self.thresh
 
