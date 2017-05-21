@@ -1,17 +1,7 @@
 import web
 import numpy as np
-from web.contrib.template import render_jinja
 import glob
 
-
-
-urls = (
-  '/', 'Index'
-)
-
-db_file = './../synsets/database/synset.sqlite3'
-
-dbi = web.database(dbn='sqlite', db=db_file)
 
 
 class PictoMatcher(object):
@@ -47,6 +37,8 @@ class PictoMatcher(object):
 
             if pnid is not None:
                 prob += result_weights[id]
+
+        print ('total %: %d', prob)
 
         return prob >= self.thresh
 
