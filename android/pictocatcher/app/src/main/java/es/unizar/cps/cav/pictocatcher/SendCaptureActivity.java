@@ -1,20 +1,27 @@
 package es.unizar.cps.cav.pictocatcher;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.Image;
+import android.net.Uri;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.ButtonBarLayout;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -32,7 +39,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -49,22 +60,16 @@ public class SendCaptureActivity extends AppCompatActivity {
     protected void onStart(){
         super.onStart();
 
-
-
         ImageView imageView = (ImageView) findViewById(R.id.sendCapView);
-
 
         String capturePath = getIntent().getExtras().getString("capturePath");
 
         String[] image_data = capturePath.split("_");
         final int pictoId = Integer.parseInt(image_data[1]);
-        Bitmap bmp = BitmapFactory.decodeFile(capturePath);
-
         // Get the dimensions of the View
+
         int targetW = imageView.getLayoutParams().width;
         int targetH = imageView.getLayoutParams().height;
-
-        Log.d("PICTOCATCHER", targetW + " : " + targetH);
 
         // Get the dimensions of the bitmap
         BitmapFactory.Options bmOptions = new BitmapFactory.Options();
@@ -133,9 +138,8 @@ public class SendCaptureActivity extends AppCompatActivity {
                     public void onErrorResponse(VolleyError volleyError) {
                         //Dismissing the progress dialog
                         loading.dismiss();
-
                         //Showing toast
-                        Toast.makeText(SendCaptureActivity.this, volleyError.getMessage().toString(), Toast.LENGTH_LONG).show();
+                        Toast.makeText(SendCaptureActivity.this, volleyError.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 }){
             @Override
@@ -166,10 +170,85 @@ public class SendCaptureActivity extends AppCompatActivity {
 
 
     }
+    String mCurrentPhotoPath;
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+    static final int REQUEST_TAKE_PHOTO = 1;
+    File photoFile = null;
 
-    protected void tryAgain(){
+    private void dispatchTakePictureIntent(int pictoId) {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+            File photoFile = null;
+            try {
+                photoFile = createImageFile(pictoId);
+            } catch (IOException ex) {
+                // Error occurred while creating the File
+            }
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                Uri photoURI = FileProvider.getUriForFile(this,
+                        this.getApplicationContext().getPackageName() + ".fileprovider",
+                        photoFile);
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
+                        photoURI);
+                startActivityForResult(takePictureIntent, REQUEST_TAKE_PHOTO);
+            }
+        }
+    }
+
+    /**
+     * http://developer.android.com/training/camera/photobasics.html
+     */
+    private File createImageFile(int pictoId) throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + pictoId + "_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+
+        image.mkdirs();
+
+        // Save a file: path for use with ACTION_VIEW intents
+        mCurrentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_IMAGE_CAPTURE ) {
+            if (resultCode == RESULT_OK) {
+                Intent showCapture = new Intent(this, SendCaptureActivity.class);
+                showCapture.putExtra("capturePath",mCurrentPhotoPath);
+                this.startActivity(showCapture);
+                ;
+            } else {
+                File f = new File(mCurrentPhotoPath);
+                if (f.exists()) {
+                    f.delete();
+                }
+            }
+        }
 
     }
+
+    protected void tryAgain(){
+        Button b = (Button) findViewById(R.id.sendCapRetryButton);
+        b.setVisibility(View.VISIBLE);
+
+        b.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                finish();
+            }
+        });
+    }
+
+
 
     protected void captureOK() {
 
