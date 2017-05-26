@@ -23,8 +23,8 @@ class PostCapture(object):
     def POST(self):
 
         data = web.input()
-        print data
-        wnid = int(data["wnid"])
+        
+	wnid = int(data["wnid"])
         imagestring = data["captured_picto"]
 
         fd,path = tempfile.mkstemp(suffix=".jpeg", prefix='pc_')
