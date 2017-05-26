@@ -24,7 +24,7 @@ class PostCapture(object):
 
         data = web.input()
         
-	wnid = int(data["wnid"])
+        wnid = int(data["wnid"])
         imagestring = data["captured_picto"]
 
         fd, path = tempfile.mkstemp(suffix=".jpeg", prefix='pc_')
@@ -34,8 +34,8 @@ class PostCapture(object):
             f.close()
 
         result = PostCapture.match(image_file=path, search_wnid=wnid)
-
         response = {'result': int(result)}
+        os.remove(path)
         return json.dumps(response)
 
     @staticmethod
