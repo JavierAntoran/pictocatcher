@@ -27,16 +27,19 @@ class PostCapture(object):
 	wnid = int(data["wnid"])
         imagestring = data["captured_picto"]
 
-        fd,path = tempfile.mkstemp(suffix=".jpeg", prefix='pc_')
+        fd, path = tempfile.mkstemp(suffix=".jpeg", prefix='pc_')
 
         with os.fdopen(fd, 'w') as f:
             f.write(base64.decodestring(imagestring))
             f.close()
-        print(path)
-        response = {'result': int(self.match(image_file=path, search_wnid=wnid))}
+
+        result = PostCapture.match(image_file=path, search_wnid=wnid)
+
+        response = {'result': int(result)}
         return json.dumps(response)
 
-    def match(self, image_file, search_wnid):
+    @staticmethod
+    def match(image_file, search_wnid):
 
         global db
         global cl
