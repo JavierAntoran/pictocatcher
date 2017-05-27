@@ -20,12 +20,15 @@ class PictoMatcher(object):
 
             next_id = result_wNid[id]
             pnid = 0
+
+            # print('testing wnid: %s\n', next_id)
+
             while pnid != self.picto_wNid and pnid is not None:
 
                 matches = self.db.query('''
                                     SELECT pnid FROM imagenet_synset WHERE wnid = $wnid''', vars={'wnid': next_id})
 
-                pnids = set()
+                pnids = set() #structure without duplicates
                 for match in matches:
                     pnids.add(match.pnid)
 
@@ -35,13 +38,15 @@ class PictoMatcher(object):
                 pnid = pnids.pop()
                 next_id = pnid
 
-            if pnid is not None:
+            if pnid is not None:  # we have found a match
                 prob += result_weights[id]
-                #testing: probability correction
-                if 0 < id < 4 and result_weights[0] > 0.35:
-                    correcting_factor = 0.75/(1-result_weights[0])
-                    prob -= result_weights[id]
-                    prob += result_weights[id] * correcting_factor
+                # print('match found wnid = %s\n', pnid)
+
+                # testing: probability correction
+                # if 0 < id < 4 and result_weights[0] > 0.35:
+                    # correcting_factor = 0.75/(1-result_weights[0])
+                    # prob -= result_weights[id]
+                    # prob += result_weights[id] * correcting_factor
 
         print ('total %: %d', prob)
 
