@@ -3,6 +3,7 @@ package es.unizar.cps.cav.pictocatcher;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.res.AssetManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -27,6 +28,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -49,142 +51,26 @@ import java.util.Map;
 
 public class SendCaptureActivity extends AppCompatActivity {
 
+    String mCurrentPhotoPath;
+    static final int REQUEST_IMAGE_CAPTURE = 1;
+    static final int REQUEST_TAKE_PHOTO = 1;
+    private int pictoId;
+    private MySQLiteHelper dbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        pictoId = getIntent().getExtras().getInt("pictoId");
 
-        setContentView(R.layout.send_capture);
-    }
+        dbHelper = new MySQLiteHelper(this);
 
-    protected void onStart(){
-        super.onStart();
-
-        ImageView imageView = (ImageView) findViewById(R.id.sendCapView);
-
-        String capturePath = getIntent().getExtras().getString("capturePath");
-
-        String[] image_data = capturePath.split("_");
-        final int pictoId = Integer.parseInt(image_data[1]);
-        // Get the dimensions of the View
-
-        int targetW = imageView.getLayoutParams().width;
-        int targetH = imageView.getLayoutParams().height;
-
-        // Get the dimensions of the bitmap
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        bmOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(capturePath, bmOptions);
-        int photoW = bmOptions.outWidth;
-        int photoH = bmOptions.outHeight;
-
-        // Determine how much to scale down the image
-        int scaleFactor = Math.min(photoW / targetW, photoH / targetH);
-
-        // Decode the image file into a Bitmap sized to fill the View
-        bmOptions.inJustDecodeBounds = false;
-        bmOptions.inSampleSize = scaleFactor << 1;
-        Bitmap bitmap = BitmapFactory.decodeFile(capturePath, bmOptions);
-
-        Matrix mtx = new Matrix();
-        mtx.postRotate(90);
-        // Rotating Bitmap
-        final Bitmap rotatedBMP = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), mtx, true);
-
-        if (rotatedBMP != bitmap)
-            bitmap.recycle();
-
-        imageView.setImageBitmap(rotatedBMP);
-
-        ImageView sendCapPicto = (ImageView) findViewById(R.id.sendCapPicto);
-        AssetManager assetManager = this.getAssets();
-
-        try {
-            InputStream is = assetManager.open("pictograms/bike.png");
-            Bitmap bitmapPicto = BitmapFactory.decodeStream(is);
-            sendCapPicto.setImageBitmap(bitmapPicto);
-        }catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        final ProgressDialog loading = ProgressDialog.show(this,"Uploading...","Please wait...",false,false);
-        final StringRequest stringRequest = new StringRequest(Request.Method.POST, "https://httpbin.org/post",
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        JSONObject r;
-                        boolean result = false;
-                        try {
-                            r = new JSONObject(response);
-                            //Disimissing the progress dialog
-                            loading.dismiss();
-                            //Showing toast message of the response
-                            Log.d("PICTOCATCHER", response);
-                            result = r.getBoolean("result");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        if ( result ) {
-                            Toast.makeText(SendCaptureActivity.this, "Cooool! ;-)", Toast.LENGTH_LONG).show();
-                            captureOK();
-                        } else {
-                            Toast.makeText(SendCaptureActivity.this, "Ohhhhh! :_(", Toast.LENGTH_LONG).show();
-                            tryAgain();
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError volleyError) {
-                        //Dismissing the progress dialog
-                        loading.dismiss();
-                        //Showing toast
-                        Toast.makeText(SendCaptureActivity.this, volleyError.getMessage(), Toast.LENGTH_LONG).show();
-                    }
-                }){
-            @Override
-            protected Map<String, String> getParams() throws AuthFailureError {
-                //Converting Bitmap to String
-                String image = getStringImage(rotatedBMP);
-
-                //Getting Image Name
-                String picto_id = Integer.toString(pictoId);
-
-                //Creating parameters
-                Map<String,String> params = new Hashtable<String,String>();
-
-                //Adding parameters
-                params.put("captured_picto", image);
-                params.put("picto_id", picto_id);
-
-                //returning parameters
-                return params;
-            }
-        };
-
-        //Creating a Request Queue
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
-
-        //Adding request to the queue
-        requestQueue.add(stringRequest);
-
-
-    }
-    String mCurrentPhotoPath;
-    static final int REQUEST_IMAGE_CAPTURE = 1;
-    static final int REQUEST_TAKE_PHOTO = 1;
-    File photoFile = null;
-
-    private void dispatchTakePictureIntent(int pictoId) {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
         if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
             File photoFile = null;
             try {
                 photoFile = createImageFile(pictoId);
-            } catch (IOException ex) {
-                // Error occurred while creating the File
-            }
+            } catch (IOException ex) {}
             // Continue only if the File was successfully created
             if (photoFile != null) {
                 Uri photoURI = FileProvider.getUriForFile(this,
@@ -223,15 +109,129 @@ public class SendCaptureActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_IMAGE_CAPTURE ) {
             if (resultCode == RESULT_OK) {
-                Intent showCapture = new Intent(this, SendCaptureActivity.class);
-                showCapture.putExtra("capturePath",mCurrentPhotoPath);
-                this.startActivity(showCapture);
-                ;
+
+                setContentView(R.layout.send_capture);
+
+
+                ImageView imageView = (ImageView) findViewById(R.id.sendCapView);
+
+                // Get the dimensions of the View
+
+                int targetW = imageView.getLayoutParams().width;
+                int targetH = imageView.getLayoutParams().height;
+
+                // Get the dimensions of the bitmap
+                BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+                bmOptions.inJustDecodeBounds = true;
+                BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+                int photoW = bmOptions.outWidth;
+                int photoH = bmOptions.outHeight;
+
+                // Determine how much to scale down the image
+                int scaleFactor = Math.min(photoW / targetW, photoH / targetH);
+
+                // Decode the image file into a Bitmap sized to fill the View
+                bmOptions.inJustDecodeBounds = false;
+                bmOptions.inSampleSize = 1/4;//scaleFactor << 1;
+                final Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
+
+                //Matrix mtx = new Matrix();
+                //mtx.postRotate(90);
+                // Rotating Bitmap
+                //final Bitmap rotatedBMP = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), mtx, true);
+
+                //if (rotatedBMP != bitmap)
+                //    bitmap.recycle();
+
+                imageView.setImageBitmap(bitmap);
+
+                ImageView sendCapPicto = (ImageView) findViewById(R.id.sendCapPicto);
+                AssetManager assetManager = this.getAssets();
+
+                final Cursor pictoCursor  = dbHelper.getPictoById(pictoId);
+                pictoCursor.moveToFirst();
+                try {
+                    InputStream is = assetManager.open("pictograms/" + pictoCursor.getString(pictoCursor.getColumnIndex("imagename")));
+                    Bitmap bitmapPicto = BitmapFactory.decodeStream(is);
+                    sendCapPicto.setImageBitmap(bitmapPicto);
+                }catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                final ProgressDialog loading = ProgressDialog.show(this,"Uploading...","Please wait...",false,false);
+                final StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://voz07.cps.unizar.es:8080/post_capture",
+                        new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+
+                                Log.d("PICTOCATCHER", response);
+                                JSONObject r;
+                                boolean result = false;
+                                try {
+                                    r = new JSONObject(response);
+                                    //Disimissing the progress dialog
+                                    loading.dismiss();
+                                    //Showing toast message of the response
+                                    Log.d("PICTOCATCHER", r.toString());
+                                    result = r.getBoolean("result");
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                if ( result ) {
+                                    Toast.makeText(SendCaptureActivity.this, "Cooool! ;-)", Toast.LENGTH_LONG).show();
+                                    saveResult();
+                                } else {
+                                    Toast.makeText(SendCaptureActivity.this, "Ohhhhh! :_(", Toast.LENGTH_LONG).show();
+                                    tryAgain();
+                                }
+                            }
+                        },
+                        new Response.ErrorListener() {
+                            @Override
+                            public void onErrorResponse(VolleyError volleyError) {
+                                Log.d("PICTOCATCHER", volleyError.toString());
+                                //Dismissing the progress dialog
+                                loading.dismiss();
+                                tryAgain();
+                                //Showing toast
+                                Log.d("PICTOCATCHER", volleyError.toString());
+                                Toast.makeText(SendCaptureActivity.this, volleyError.getMessage(), Toast.LENGTH_LONG).show();
+                            }
+                        }){
+                    @Override
+                    protected Map<String, String> getParams() throws AuthFailureError {
+                        //Converting Bitmap to String
+                        String image = getStringImage(bitmap);
+
+                        //Getting Image Name
+                        String wnids = pictoCursor.getString(pictoCursor.getColumnIndex("wnids"));
+
+                        //Creating parameters
+                        Map<String,String> params = new Hashtable<String,String>();
+
+                        //Adding parameters
+                        params.put("captured_picto", image);
+                        params.put("wnid", wnids);
+
+                        //returning parameters
+                        return params;
+                    }
+                };
+                stringRequest.setRetryPolicy(new DefaultRetryPolicy(
+                        30000,
+                        0,
+                        DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+
+                //Creating a Request Queue
+                RequestQueue requestQueue = Volley.newRequestQueue(this);
+                //Adding request to the queue
+                requestQueue.add(stringRequest);
             } else {
                 File f = new File(mCurrentPhotoPath);
                 if (f.exists()) {
                     f.delete();
                 }
+                finish();
             }
         }
 
@@ -244,19 +244,26 @@ public class SendCaptureActivity extends AppCompatActivity {
         b.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 finish();
+                startActivity(getIntent());
             }
         });
     }
 
-
-
-    protected void captureOK() {
-
+    protected void saveResult(){
+        if (dbHelper.setCatchInfo(pictoId, new Date(), mCurrentPhotoPath) != 1) {
+            Toast.makeText(SendCaptureActivity.this, "An error ocurred", Toast.LENGTH_LONG).show();
+            tryAgain();
+        }
+        Intent intent = new Intent(this, ShowCaptureActivity.class);
+        intent.putExtra("pictoId",pictoId);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(intent);
+        finish();
     }
 
     protected String getStringImage(Bitmap bmp) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bmp.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        bmp.compress(Bitmap.CompressFormat.JPEG, 80, baos);
         byte[] imageBytes = baos.toByteArray();
         String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
         return encodedImage;

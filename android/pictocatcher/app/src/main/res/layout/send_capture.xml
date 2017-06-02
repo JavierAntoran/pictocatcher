@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background_texture"
     tools:context="es.unizar.cps.cav.pictocatcher.SendCaptureActivity">
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -23,6 +24,14 @@
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:scaleType="fitXY"/>
+
+        <Button
+            android:id="@+id/sendCapRetryButton"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Volver a intentarlo"
+            android:layout_alignParentBottom="true"
+            android:visibility="gone" />
 
 
     </RelativeLayout>
