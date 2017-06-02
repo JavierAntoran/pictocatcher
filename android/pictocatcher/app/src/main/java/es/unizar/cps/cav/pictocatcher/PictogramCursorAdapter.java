@@ -44,8 +44,11 @@ public class PictogramCursorAdapter extends CursorAdapter {
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         MarkableImageView imageView = new MarkableImageView(context);
-        imageView.setLayoutParams(new GridView.LayoutParams(500, 500));
-        imageView.setPadding(20,20,20,20);
+        imageView.setAdjustViewBounds(true);
+        int imgSize = context.getResources().getDimensionPixelSize(R.dimen.gridimage);
+        int imgPadding = context.getResources().getDimensionPixelSize(R.dimen.gridimage_padding);
+        imageView.setLayoutParams(new GridView.LayoutParams(imgSize, imgSize));
+        imageView.setPadding(imgPadding,imgPadding,imgPadding,imgPadding);
 
         imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
         return imageView;
