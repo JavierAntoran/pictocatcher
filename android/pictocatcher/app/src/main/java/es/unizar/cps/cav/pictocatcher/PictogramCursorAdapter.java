@@ -74,6 +74,7 @@ public class PictogramCursorAdapter extends CursorAdapter {
         }
         Picasso.with(context)
             .load("file:///android_asset/pictograms/"+cursor.getString(cursor.getColumnIndexOrThrow("imagename")))
+            .placeholder(R.drawable.placeholder)
             .into(imageView);
     }
 
