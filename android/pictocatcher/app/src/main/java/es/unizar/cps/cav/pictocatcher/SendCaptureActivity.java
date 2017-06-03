@@ -36,12 +36,15 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -115,48 +118,42 @@ public class SendCaptureActivity extends AppCompatActivity {
 
                 ImageView imageView = (ImageView) findViewById(R.id.sendCapView);
 
-                // Get the dimensions of the View
-
-                int targetW = imageView.getLayoutParams().width;
-                int targetH = imageView.getLayoutParams().height;
-
-                // Get the dimensions of the bitmap
                 BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-                bmOptions.inJustDecodeBounds = true;
-                BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
-                int photoW = bmOptions.outWidth;
-                int photoH = bmOptions.outHeight;
+                bmOptions.inSampleSize = 1/4;
+                final Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath,bmOptions);
+                try {
+                    FileOutputStream fileOutputStream = new FileOutputStream(mCurrentPhotoPath);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 70, fileOutputStream);
+                    fileOutputStream.flush();
+                    fileOutputStream.close();
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
-                // Determine how much to scale down the image
-                int scaleFactor = Math.min(photoW / targetW, photoH / targetH);
-
-                // Decode the image file into a Bitmap sized to fill the View
-                bmOptions.inJustDecodeBounds = false;
-                bmOptions.inSampleSize = 1/4;//scaleFactor << 1;
-                final Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath, bmOptions);
-
-                //Matrix mtx = new Matrix();
-                //mtx.postRotate(90);
-                // Rotating Bitmap
-                //final Bitmap rotatedBMP = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), mtx, true);
-
-                //if (rotatedBMP != bitmap)
-                //    bitmap.recycle();
-
-                imageView.setImageBitmap(bitmap);
+                Picasso.with(this)
+                        .load("file://"+mCurrentPhotoPath)
+                        .placeholder(R.drawable.placeholder_photo)
+                        .into(imageView);
+                //imageView.setImageBitmap(bitmap);
 
                 ImageView sendCapPicto = (ImageView) findViewById(R.id.sendCapPicto);
                 AssetManager assetManager = this.getAssets();
 
                 final Cursor pictoCursor  = dbHelper.getPictoById(pictoId);
                 pictoCursor.moveToFirst();
-                try {
-                    InputStream is = assetManager.open("pictograms/" + pictoCursor.getString(pictoCursor.getColumnIndex("imagename")));
-                    Bitmap bitmapPicto = BitmapFactory.decodeStream(is);
-                    sendCapPicto.setImageBitmap(bitmapPicto);
-                }catch (Exception e) {
-                    e.printStackTrace();
-                }
+                //try {
+                    //InputStream is = assetManager.open("pictograms/" + pictoCursor.getString(pictoCursor.getColumnIndex("imagename")));
+                    //Bitmap bitmapPicto = BitmapFactory.decodeStream(is);
+                    //sendCapPicto.setImageBitmap(bitmapPicto);
+                    Picasso.with(this)
+                            .load("file:///android_asset/pictograms/"+pictoCursor.getString(pictoCursor.getColumnIndex("imagename")))
+                            .placeholder(R.drawable.placeholder)
+                            .into(sendCapPicto);
+                //}catch (Exception e) {
+                //    e.printStackTrace();
+                //}
 
                 final ProgressDialog loading = ProgressDialog.show(this,"Uploading...","Please wait...",false,false);
                 final StringRequest stringRequest = new StringRequest(Request.Method.POST, "http://voz07.cps.unizar.es:8080/post_capture",
