@@ -1,12 +1,11 @@
 package es.unizar.cps.cav.pictocatcher;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
 import android.view.ViewParent;
@@ -18,6 +17,12 @@ import android.widget.ImageView;
 
 public class MarkableImageView extends ImageView {
     private boolean checked = false;
+
+    /*final Bitmap check = BitmapFactory.decodeResource(
+            getResources(), R.drawable.checked2);
+
+    final Bitmap picframe = BitmapFactory.decodeResource(
+            getResources(), R.drawable.woodenframe1);*/
 
     public MarkableImageView(Context context) {
         super(context);
@@ -43,19 +48,23 @@ public class MarkableImageView extends ImageView {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+
+        int width = canvas.getWidth();
+        int height = canvas.getHeight();
+
+        Drawable frame =  ContextCompat.getDrawable(getContext(),R.drawable.woodenframe1);
+
+        frame.setBounds(0, 0, width, height);
+        frame.draw(canvas);
+
+
         if(checked) {
-            Bitmap check = BitmapFactory.decodeResource(
-                    getResources(), R.drawable.checked2);
-
-           int imgSize = getContext().getResources().getDimensionPixelSize(R.dimen.gridimage);
-
-            Rect r1 = new Rect(0,0,check.getWidth(),check.getHeight());
-            Rect r2 = new Rect(canvas.getHeight()/2, canvas.getWidth()/2,
-                    canvas.getHeight(),canvas.getWidth());
-
-            canvas.drawBitmap(check, r1, r2, new Paint());
-
+            int imgSize = getContext().getResources().getDimensionPixelSize(R.dimen.gridimage);
+            Drawable tick =  ContextCompat.getDrawable(getContext(),R.drawable.checked2);
+            tick.setBounds(imgSize/2, imgSize/2, imgSize, imgSize);
+            tick.draw(canvas);
         }
+        setDrawingCacheEnabled(true); // cache
     }
 
     boolean mAdjustViewBounds;

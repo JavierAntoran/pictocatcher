@@ -5,16 +5,17 @@ import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.util.Log;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 
-import java.io.IOException;
-import java.io.InputStream;
+
+import com.squareup.picasso.Picasso;
 
 /**
  * Created by almul0 on 5/12/17.
@@ -24,9 +25,13 @@ public class PictogramCursorAdapter extends CursorAdapter {
 
     AssetManager assetManager;
 
+    Context context;
+
     public PictogramCursorAdapter(Context c, Cursor cursor) {
         super(c, cursor, 0);
         assetManager = c.getAssets();
+        this.context = c;
+
     }
 
     public int getCount() {
@@ -61,20 +66,15 @@ public class PictogramCursorAdapter extends CursorAdapter {
         // Find fields to populate in inflated template
         MarkableImageView imageView = (MarkableImageView) view;
 
-        try {
-
-            InputStream is = assetManager.open("pictograms/"+cursor.getString(cursor.getColumnIndexOrThrow("imagename")));
-            Bitmap bitmap = BitmapFactory.decodeStream(is);
-            imageView.setImageBitmap(bitmap);
-            imageView.setTag(cursor.getInt(cursor.getColumnIndexOrThrow("_id")));
-            if (cursor.getInt(cursor.getColumnIndexOrThrow("caught")) == 1) {
-                imageView.setChecked(true);
-            } else {
-                imageView.setChecked(false);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+        imageView.setTag(cursor.getInt(cursor.getColumnIndexOrThrow("_id")));
+        if (cursor.getInt(cursor.getColumnIndexOrThrow("caught")) == 1) {
+            imageView.setChecked(true);
+        } else {
+            imageView.setChecked(false);
         }
+        Picasso.with(context)
+            .load("file:///android_asset/pictograms/"+cursor.getString(cursor.getColumnIndexOrThrow("imagename")))
+            .into(imageView);
     }
 
 }
