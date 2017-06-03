@@ -60,16 +60,11 @@ class Classifier(object):
 
         global FLAGS
 
-
         if FLAGS is None:
             FLAGS = Map()
             FLAGS.num_top_predictions = 20
 
         FLAGS.model_dir = './bin/tensorflow/model'
-
-
-
-
 
     def create_graph(self):
         global FLAGS
@@ -114,8 +109,8 @@ class Classifier(object):
                 human_string = node_finder.id_to_string(node_id)
                 score[index] = predictions[node_id]
                 wnid[index] = node_finder.id_to_wnid(node_id)
-                #print('node: %s, %s (score = %.5f)' %
-                      #(wnid[index], human_string, score[index]))
+                print('node: %s, %s (score = %.5f)' %
+                      (wnid[index], human_string, score[index]))
                 index += 1
             sess.close()
 
