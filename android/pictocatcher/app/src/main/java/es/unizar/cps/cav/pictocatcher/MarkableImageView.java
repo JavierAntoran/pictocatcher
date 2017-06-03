@@ -18,6 +18,9 @@ import android.widget.ImageView;
 public class MarkableImageView extends ImageView {
     private boolean checked = false;
 
+    private static Drawable frame;
+    private static Drawable tick;
+
     /*final Bitmap check = BitmapFactory.decodeResource(
             getResources(), R.drawable.checked2);
 
@@ -36,6 +39,15 @@ public class MarkableImageView extends ImageView {
         super(context, attrs, defStyle);
     }
 
+    public void loadDrawables(){
+        if (frame == null) {
+            frame = ContextCompat.getDrawable(getContext(), R.drawable.woodenframe1);
+        }
+        if (tick == null) {
+            tick = ContextCompat.getDrawable(getContext(), R.drawable.checked2);
+        }
+    }
+
     public void setChecked(boolean checked) {
         this.checked = checked;
         invalidate();
@@ -49,22 +61,24 @@ public class MarkableImageView extends ImageView {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
+        loadDrawables();
+
         int width = canvas.getWidth();
         int height = canvas.getHeight();
 
-        Drawable frame =  ContextCompat.getDrawable(getContext(),R.drawable.woodenframe1);
+        //Drawable frame =  ContextCompat.getDrawable(getContext(),R.drawable.woodenframe1);
 
         frame.setBounds(0, 0, width, height);
         frame.draw(canvas);
 
 
         if(checked) {
-            int imgSize = getContext().getResources().getDimensionPixelSize(R.dimen.gridimage);
-            Drawable tick =  ContextCompat.getDrawable(getContext(),R.drawable.checked2);
+
+            int imgSize = this.getWidth();//getContext().getResources().getDimensionPixelSize(R.id.gridImage);
+
             tick.setBounds(imgSize/2, imgSize/2, imgSize, imgSize);
             tick.draw(canvas);
         }
-        setDrawingCacheEnabled(true); // cache
     }
 
     boolean mAdjustViewBounds;
