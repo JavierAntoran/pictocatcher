@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp"
+    android:layout_gravity="center">
+
+    <es.unizar.cps.cav.pictocatcher.MarkableImageView
+        android:id="@+id/gridImage"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:scaleType="centerCrop"
+        android:adjustViewBounds="true"
+        android:padding="10dp"/>
+
+    <TextView
+        android:id="@+id/gridCaption"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20dp"
+        android:textAllCaps="true"
+        android:textColor="#0C090A"
+        android:shadowColor="#FFFFFFFF"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="10"
+        android:textAlignment="center"
+        android:scrollHorizontally="false"
+        />
+    <!--android:ellipsize="marquee"
+    android:maxLines="1"
+    android:marqueeRepeatLimit="marquee_forever" -->
+
+
+
+</LinearLayout>

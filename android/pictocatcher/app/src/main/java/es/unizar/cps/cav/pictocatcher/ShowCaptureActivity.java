@@ -4,6 +4,7 @@ import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
 import android.media.Image;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -27,10 +28,23 @@ public class ShowCaptureActivity extends AppCompatActivity {
         AssetManager assetManager = this.getAssets();
 
         int pictoId = getIntent().getExtras().getInt("pictoId");
-        ImageView catchImageView = (ImageView) findViewById(R.id.catch_image);
+        MarkableImageView catchImageView = (MarkableImageView) findViewById(R.id.catch_image);
         TextView catchDateView = (TextView) findViewById(R.id.catch_date);
         TextView catchTitleView = (TextView) findViewById(R.id.catch_title);
         TextView descriptionView = (TextView) findViewById(R.id.catch_description);
+        TextView descriptionTitleView = (TextView) findViewById(R.id.catch_description_title);
+
+        Typeface tfb = Typeface.createFromAsset(assetManager,
+                String.format("fonts/%s", "babelsans_bold.ttf"));
+        Typeface tf = Typeface.createFromAsset(assetManager,
+                String.format("fonts/%s", "babelsans_bold.ttf"));
+
+        catchTitleView.setTypeface(tfb);
+        catchDateView.setTypeface(tf);
+        descriptionView.setTypeface(tfb);
+        descriptionTitleView.setTypeface(tfb);
+
+
 
         MySQLiteHelper dbHelper = new MySQLiteHelper(this);
 

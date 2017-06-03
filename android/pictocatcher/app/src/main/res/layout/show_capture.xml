@@ -4,7 +4,8 @@
 android:layout_width="fill_parent"
 android:layout_height="wrap_content"
 android:orientation="vertical"
-android:padding="10dp"
+android:paddingRight="20dp"
+android:paddingLeft="20dp"
 android:background="@drawable/background_texture"
 android:fillViewport="false"
 tools:context="es.unizar.cps.cav.pictocatcher.ShowCaptureActivity">
@@ -18,37 +19,58 @@ tools:context="es.unizar.cps.cav.pictocatcher.ShowCaptureActivity">
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textStyle="bold"
-        android:textSize="30sp"
-        android:textColor="#0C090A"/>
+        android:textSize="40sp"
+        android:textColor="#0C090A"
+        android:shadowColor="#FFFFFFFF"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="10"
+        />
     <TextView
         android:id="@+id/catch_date"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:textColor="#0C090A"/>
+        android:textSize="25sp"
+        android:textColor="#0C090A"
+        android:shadowColor="#FFFFFFFF"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="10"/>
 
-    <ImageView
+    <es.unizar.cps.cav.pictocatcher.MarkableImageView
         android:id="@+id/catch_image"
-        android:layout_width="wrap_content"
-        android:layout_height="200dp"
-        android:scaleType="centerCrop"
+        android:layout_width="match_parent"
+        android:layout_height="225dp"
+        android:scaleType="centerInside"
+        android:adjustViewBounds="true"
+        android:padding="10dp"
         />
 
     <TextView
-        android:id="@+id/catch_date"
-        android:layout_width="wrap_content"
+        android:id="@+id/catch_description_title"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:text="Descripción"
-        android:textSize="25sp"
+        android:textSize="30sp"
         android:textStyle="bold"
-        android:textColor="#0C090A"/>
+        android:textColor="#0C090A"
+        android:shadowColor="#FFFFFFFF"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="10"/>
 
     <TextView
         android:id="@+id/catch_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
+        android:textSize="25sp"
         android:textColor="#0C090A"
-        android:background="#CCFFFFFF"/>
+        android:padding="10dp"
+        android:shadowColor="#FFFFFFFF"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="10"
+        />
 </LinearLayout>
 </ScrollView>
