@@ -34,7 +34,7 @@ class PostCapture(object):
             f.close()
 
         result = PostCapture.match(image_file=path, search_wnid=wnid)
-        response = {'result': int(result)}
+        response = {'result': 'true' if result else 'false'}
         os.remove(path)
         return json.dumps(response)
 
