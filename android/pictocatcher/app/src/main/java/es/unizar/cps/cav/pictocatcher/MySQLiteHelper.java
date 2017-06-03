@@ -29,7 +29,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         // SQL statement to create book table
         // Database creation sql statement
         String PICTOCATCHER_TABLE = "CREATE TABLE pictocatcher (" +
-                "_id INTEGER PRIMARY KEY, wnids text, word TEXT, imagename TEXT, caught INTEGER DEFAULT 0," +
+                "_id INTEGER PRIMARY KEY, wnids text, word TEXT, description TEXT, imagename TEXT, caught INTEGER DEFAULT 0," +
                 "catch_date TEXT, catch_file TEXT)";
 
         // create books table
@@ -63,7 +63,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                         "('n03733925', 'Regla', 'ruler.png'), " +
                         "('n03819448', 'Nido', 'nest.png'), " +
                         "('n03880323', 'Sartén', 'frying pan.png'), " +
-                        "('n03908456,n13863020', 'Lapicero', 'pencil.png'), " +
+                        "('n03906997', 'Bolígrafo', 'pen.png'), " +
                         "('n03985232', 'Portátil', 'laptop.png'), " +
                         "('n04228054', 'Ski', 'ski.png'), " +
                         "('n04244997', 'Canoa', 'canoe.png'), " +
@@ -76,7 +76,8 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                         "('n09239740', 'Estrellas', 'stars.png'), " +
                         "('n11669921', 'Flor', 'flower.png'), " +
                         "('n12992868', 'Seta', 'mushroom.png'), " +
-                        "('n13103136', 'Árbol', 'tree.png');";
+                        "('n13103136', 'Árbol', 'tree.png')," +
+                        "('n03294833', 'Goma de borrar', 'rubber.png');";
 
         db.execSQL(POPULATE_DATA);
         /*POPULATE_DATA =
@@ -101,7 +102,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     public Cursor getAllPictos(){
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor res = db.rawQuery("SELECT * FROM pictocatcher", null);
+        Cursor res = db.rawQuery("SELECT * FROM pictocatcher ORDER BY word", null);
 
         return res;
     }
