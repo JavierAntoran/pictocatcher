@@ -62,7 +62,7 @@ class Classifier(object):
 
         if FLAGS is None:
             FLAGS = Map()
-            FLAGS.num_top_predictions = 20
+            FLAGS.num_top_predictions = 6
 
         FLAGS.model_dir = './bin/tensorflow/model'
 

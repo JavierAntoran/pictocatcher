@@ -19,7 +19,7 @@ class PictoMatcher(object):
         for id in result_wNid:
 
             next_id = result_wNid[id]
-            pnid = next_id;
+            pnid = next_id
 
             # print('testing wnid: %s\n', next_id)
 
