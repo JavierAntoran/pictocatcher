@@ -48,7 +48,7 @@ class PictoMatcher(object):
                     # prob -= result_weights[id]
                     # prob += result_weights[id] * correcting_factor
 
-        print ('total %: %d', prob)
+        print ('total: ',  prob, '\n')
 
 
         return prob >= self.thresh
