@@ -12,6 +12,8 @@ import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.DateFormat;
@@ -62,12 +64,12 @@ public class ShowCaptureActivity extends AppCompatActivity {
 
         catchTitleView.setText(c.getString(c.getColumnIndex("word")));
 
-        descriptionView.setText("La regla graduada es un instrumento de medición con forma de plancha delgada y rectangular que incluye una escala graduada dividida en unidades de longitud, por ejemplo, centímetros o pulgadas; es un instrumento útil para trazar segmentos rectilíneos con la ayuda de un bolígrafo o lápiz, y puede ser rígido, semirrígido o muy flexible, construido de madera, metal y material plástico, entre otros.");
+        descriptionView.setText("Proin vulputate vestibulum faucibus. Donec a ultrices dolor. Maecenas quis nibh non mi sodales vehicula id at urna. Vestibulum ac tristique ante. Morbi eros felis, pretium sit amet dictum a, tincidunt eu tortor. In mattis dolor eu diam euismod, at suscipit velit accumsan. Mauris maximus gravida nunc, quis volutpat ex. Phasellus in augue eu felis ullamcorper vehicula. Suspendisse potenti. Nulla cursus lorem sed neque maximus, egestas aliquet urna suscipit. Cras ornare urna a justo laoreet semper.");
 
         String catchPhotoPath = c.getString(c.getColumnIndex("catch_file"));
         Log.d("PICTOCATCHER", catchPhotoPath);
 
-            Bitmap catchImage = BitmapFactory.decodeFile(catchPhotoPath);
+            //Bitmap catchImage = BitmapFactory.decodeFile(catchPhotoPath);
 
             //Matrix mtx = new Matrix();
             //mtx.postRotate(90);
@@ -76,7 +78,12 @@ public class ShowCaptureActivity extends AppCompatActivity {
 
             //if (rotatedBMP != bitmap)
             //    bitmap.recycle();
-            catchImageView.setImageBitmap(catchImage);
+            Picasso.with(this)
+                .load("file://"+catchPhotoPath)
+                .placeholder(R.drawable.placeholder_photo)
+                .into(catchImageView);
+            //catchImageView.setImageBitmap(catchImage);
+
 
     }
 }
