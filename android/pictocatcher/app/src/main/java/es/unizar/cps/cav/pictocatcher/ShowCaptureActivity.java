@@ -27,8 +27,10 @@ public class ShowCaptureActivity extends AppCompatActivity {
         AssetManager assetManager = this.getAssets();
 
         int pictoId = getIntent().getExtras().getInt("pictoId");
-        ImageView iv = (ImageView) findViewById(R.id.showCapture);
-        TextView tv = (TextView) findViewById(R.id.caughtDate);
+        ImageView catchImageView = (ImageView) findViewById(R.id.catch_image);
+        TextView catchDateView = (TextView) findViewById(R.id.catch_date);
+        TextView catchTitleView = (TextView) findViewById(R.id.catch_title);
+        TextView descriptionView = (TextView) findViewById(R.id.catch_description);
 
         MySQLiteHelper dbHelper = new MySQLiteHelper(this);
 
@@ -39,17 +41,28 @@ public class ShowCaptureActivity extends AppCompatActivity {
         try {
             Date d = idf.parse(c.getString(c.getColumnIndex("catch_date")));
             SimpleDateFormat odf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-            tv.setText(odf.format(d));
+            catchDateView.setText(odf.format(d));
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        try {
-            InputStream is = assetManager.open("pictograms/" + c.getString(c.getColumnIndexOrThrow("imagename")));
-            Bitmap bitmap = BitmapFactory.decodeStream(is);
-            iv.setImageBitmap(bitmap);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        catchTitleView.setText(c.getString(c.getColumnIndex("word")));
+
+        descriptionView.setText("La regla graduada es un instrumento de medición con forma de plancha delgada y rectangular que incluye una escala graduada dividida en unidades de longitud, por ejemplo, centímetros o pulgadas; es un instrumento útil para trazar segmentos rectilíneos con la ayuda de un bolígrafo o lápiz, y puede ser rígido, semirrígido o muy flexible, construido de madera, metal y material plástico, entre otros.");
+
+        String catchPhotoPath = c.getString(c.getColumnIndex("catch_file"));
+        Log.d("PICTOCATCHER", catchPhotoPath);
+
+            Bitmap catchImage = BitmapFactory.decodeFile(catchPhotoPath);
+
+            //Matrix mtx = new Matrix();
+            //mtx.postRotate(90);
+            // Rotating Bitmap
+            //final Bitmap rotatedBMP = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), mtx, true);
+
+            //if (rotatedBMP != bitmap)
+            //    bitmap.recycle();
+            catchImageView.setImageBitmap(catchImage);
+
     }
 }
