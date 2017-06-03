@@ -18,6 +18,8 @@ class PictoMatcher(object):
 
         for id in result_wNid:
 
+            if prob >= self.thresh: break
+
             next_id = result_wNid[id]
             pnid = next_id
 
