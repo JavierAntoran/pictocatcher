@@ -61,12 +61,14 @@ public class MainActivity extends AppCompatActivity {
     private void sendCapture(int pictoId) {
         Intent intent = new Intent(this, SendCaptureActivity.class);
         intent.putExtra("pictoId",pictoId);
+        finish();
         startActivity(intent);
     }
 
     private void showCapture(int pictoId) {
         Intent intent = new Intent(this, ShowCaptureActivity.class);
         intent.putExtra("pictoId",pictoId);
+        finish();
         startActivity(intent);
     }
 }

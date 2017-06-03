@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.support.v7.widget.ButtonBarLayout;
 import android.util.Base64;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -58,6 +59,7 @@ public class SendCaptureActivity extends AppCompatActivity {
     static final int REQUEST_IMAGE_CAPTURE = 1;
     static final int REQUEST_TAKE_PHOTO = 1;
     private int pictoId;
+    private String encodedImage;
     private MySQLiteHelper dbHelper;
 
     @Override
@@ -121,9 +123,15 @@ public class SendCaptureActivity extends AppCompatActivity {
                 BitmapFactory.Options bmOptions = new BitmapFactory.Options();
                 bmOptions.inSampleSize = 1/4;
                 final Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath,bmOptions);
+
                 try {
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 80, baos);
                     FileOutputStream fileOutputStream = new FileOutputStream(mCurrentPhotoPath);
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 70, fileOutputStream);
+                    fileOutputStream.write(baos.toByteArray());
+                    encodedImage = Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT);
+                    baos.flush();
+                    baos.close();
                     fileOutputStream.flush();
                     fileOutputStream.close();
                 } catch (FileNotFoundException e) {
@@ -131,6 +139,8 @@ public class SendCaptureActivity extends AppCompatActivity {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                bitmap.recycle();
+
 
                 Picasso.with(this)
                         .load("file://"+mCurrentPhotoPath)
@@ -198,17 +208,18 @@ public class SendCaptureActivity extends AppCompatActivity {
                     @Override
                     protected Map<String, String> getParams() throws AuthFailureError {
                         //Converting Bitmap to String
-                        String image = getStringImage(bitmap);
+                        String image = encodedImage;
 
                         //Getting Image Name
                         String wnids = pictoCursor.getString(pictoCursor.getColumnIndex("wnids"));
 
                         //Creating parameters
                         Map<String,String> params = new Hashtable<String,String>();
-
+                        Log.d("PICTOCATCHER", wnids);
                         //Adding parameters
                         params.put("captured_picto", image);
                         params.put("wnid", wnids);
+
 
                         //returning parameters
                         return params;
@@ -254,8 +265,9 @@ public class SendCaptureActivity extends AppCompatActivity {
         Intent intent = new Intent(this, ShowCaptureActivity.class);
         intent.putExtra("pictoId",pictoId);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(intent);
+        System.gc();
         finish();
+        startActivity(intent);
     }
 
     protected String getStringImage(Bitmap bmp) {
@@ -263,6 +275,22 @@ public class SendCaptureActivity extends AppCompatActivity {
         bmp.compress(Bitmap.CompressFormat.JPEG, 80, baos);
         byte[] imageBytes = baos.toByteArray();
         String encodedImage = Base64.encodeToString(imageBytes, Base64.DEFAULT);
+        try {
+            baos.flush();
+            baos.close();
+        }catch (IOException e) {}
         return encodedImage;
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)
+    {
+        if ((keyCode == KeyEvent.KEYCODE_BACK))
+        {
+            finish();
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }
