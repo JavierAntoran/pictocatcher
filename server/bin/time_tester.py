@@ -9,7 +9,7 @@ time0 = time.time()
 db_file = './../synsets/database/synset.sqlite3'
 db = web.database(dbn='sqlite', db=db_file)
 
-image_file = './testfiles/pencil.jpg'
+image_file = './testfiles/cat.jpg'
 
 search_wnid = 'n02121808'
 
