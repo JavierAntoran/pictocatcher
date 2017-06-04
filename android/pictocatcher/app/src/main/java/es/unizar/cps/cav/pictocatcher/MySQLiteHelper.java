@@ -41,8 +41,8 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                 "INSERT INTO pictocatcher (wnids, word, imagename) VALUES " +
                         "('n02834778', 'Bicicleta', 'bicycle.png'), " +
                         "('n00007846', 'Persona', 'person_3.png'), " +
-                        "('n00464894', 'Golfista', 'golfer.png'), " +
-                        "('n00468480', 'Futbolista', 'football.png'), " +
+                        "('n00464894', 'Golf', 'golfer.png'), " +
+                        "('n00468480', 'Fútbol', 'football.png'), " +
                         "('n01473806', 'Pez', 'fish.png'), " +
                         "('n01503061', 'Pájaro', 'bird.png'), " +
                         "('n02084071', 'Perro', 'dog.png'), " +
@@ -102,7 +102,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     public Cursor getAllPictos(){
         SQLiteDatabase db = this.getReadableDatabase();
 
-        Cursor res = db.rawQuery("SELECT * FROM pictocatcher ORDER BY word", null);
+        Cursor res = db.rawQuery("SELECT * FROM pictocatcher ORDER BY word COLLATE UNICODE", null);
 
         return res;
     }
