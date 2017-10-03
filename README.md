@@ -1,4 +1,4 @@
 # pictocatcher
 
 
-A game designed to promote pictogram assisted learning.
+An Android game that uses the inception image classification network to promote pictogram assisted learning.
