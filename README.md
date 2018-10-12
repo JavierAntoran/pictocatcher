@@ -50,7 +50,7 @@ the server. Communication between the app (clients) and the server is done throu
 
  In game screenshot:
 
- <img src="pictures/in_game.png" width="300" height="500" />
+ <img src="pictures/in_game.png" width="240" height="400" />
 
 ## Going from Imagenet labels to pictograms
 
