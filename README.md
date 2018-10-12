@@ -18,6 +18,7 @@ The game has been developped with pictogram labels in Spanish. However,
 English labels are also available from [ARASAAAC](http://www.arasaac.org/pictogramas_color.php).
 
 Sample pictograms:
+
 <img src="pictures/pictogram_examples.png" width="230" height="250"/>
 
 
