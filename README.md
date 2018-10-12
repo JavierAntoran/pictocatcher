@@ -82,4 +82,6 @@ George A. Miller (1995). WordNet: A Lexical Database for English.
 Communications of the ACM Vol. 38, No. 11: 39-41.
 https://academic.oup.com/ijl/article/3/4/235/923280
 * The full pictogram catalog used can be found at http://www.arasaac.org/pictogramas_color.php
+* Inception network:
+  https://arxiv.org/abs/1409.4842
 
