@@ -17,10 +17,18 @@ provides an extensive set of pictograms with labels in many languages.
 The game has been developped with pictogram labels in Spanish. However,
 English labels are also available from [ARASAAAC](http://www.arasaac.org/pictogramas_color.php).
 
+Sample pictograms:
+<img src="pictures/pictogram_examples.png" width="230" height="250"/>
+
 
 ## How to run
 
 Server:
+```bash
+cd ./server/bin/
+python app.py
+```
+
 
 App:
 
@@ -29,7 +37,7 @@ App:
 Pictocatcher is composed of two parts. The first is a server which evaluates images
 with Google's [Inception](https://ai.googleblog.com/2016/03/train-your-own-image-classifier-with.html)
  image classification network. It then checks that the image's class corresponds to
- that of the selected pictogram usig the technique descibed [here.](#going-from-imagenet-labels-to-pictograms).
+ that of the selected pictogram usig the technique descibed [here](#going-from-imagenet-labels-to-pictograms).
 
  <img src="pictures/system_overview.png" width="400" height="300" />
 
