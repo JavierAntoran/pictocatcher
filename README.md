@@ -40,7 +40,7 @@ with Google's [Inception](https://ai.googleblog.com/2016/03/train-your-own-image
  image classification network. It then checks that the image's class corresponds to
  that of the selected pictogram using the technique descibed [here](#going-from-imagenet-labels-to-pictograms).
 
- <img src="pictures/system_overview.png" width="400" height="300" />
+ <img src="pictures/system_overview.png" width="450" height="400"/>
 
 The second part is an android application. It provides the user with a set
 of pictograms to capture. It allows the user to take pictures and send them to
