@@ -32,6 +32,7 @@ python app.py
 
 
 App:
+Just open the directory under android with AndroidStudio. Change the address in [SendCaptureActivity.java:169] (https://github.com/JavierAntoran/pictocatcher/blob/cdab6297b9999287ec161edc189b0e7bee0674a0/android/pictocatcher/app/src/main/java/es/unizar/cps/cav/pictocatcher/SendCaptureActivity.java#L169) to point where you are running the server. You are ready to build the application as any other Android application.
 
 ## Architecture
 
