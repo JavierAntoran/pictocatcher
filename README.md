@@ -17,9 +17,9 @@ provides an extensive set of pictograms with labels in many languages.
 The game has been developped with pictogram labels in Spanish. However,
 English labels are also available from [ARASAAAC](http://www.arasaac.org/pictogramas_color.php).
 
-[Architecture](#architecture)
-[How to run](#how-to-run)
-[Going from Imagenet labels to pictograms](#going-from-imagenet-labels-to-pictograms)
+[Architecture](#architecture)\
+[How to run](#how-to-run)\
+[Going from Imagenet labels to pictograms](#going-from-imagenet-labels-to-pictograms)\
 [Other resources](#other-resources)
 
 
