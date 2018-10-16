@@ -17,22 +17,16 @@ provides an extensive set of pictograms with labels in many languages.
 The game has been developped with pictogram labels in Spanish. However,
 English labels are also available from [ARASAAAC](http://www.arasaac.org/pictogramas_color.php).
 
+[Architecture](#architecture)
+[How to run](#how-to-run)
+[Going from Imagenet labels to pictograms](#going-from-imagenet-labels-to-pictograms)
+[Other resources](#other-resources)
+
+
+
 Sample pictograms:
 
 <img src="pictures/pictogram_examples.png" width="230" height="250"/>
-
-
-## How to run
-
-Server:
-```bash
-cd ./server/bin/
-python app.py
-```
-
-
-App:
-Just open the directory under android with AndroidStudio. Change the address in [SendCaptureActivity.java:169] (https://github.com/JavierAntoran/pictocatcher/blob/cdab6297b9999287ec161edc189b0e7bee0674a0/android/pictocatcher/app/src/main/java/es/unizar/cps/cav/pictocatcher/SendCaptureActivity.java#L169) to point where you are running the server. You are ready to build the application as any other Android application.
 
 ## Architecture
 
@@ -52,6 +46,23 @@ the server. Communication between the app (clients) and the server is done throu
  In game screenshot:
 
  <img src="pictures/in_game.png" width="240" height="400" />
+
+## How to run
+
+Server:
+```bash
+cd ./server/bin/
+python app.py
+```
+
+
+App:
+
+Open the android directory with AndroidStudio.
+ Change the address in [SendCaptureActivity.java:169](https://github.com/JavierAntoran/pictocatcher/blob/cdab6297b9999287ec161edc189b0e7bee0674a0/android/pictocatcher/app/src/main/java/es/unizar/cps/cav/pictocatcher/SendCaptureActivity.java#L169)
+ to the adress and port where you are running the server.
+  You are ready to build the application and run it on an Android phone.
+
 
 ## Going from Imagenet labels to pictograms
 
