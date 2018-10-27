@@ -14,7 +14,7 @@ education centers.
 
 The Aragonese Portal of Augmentative and Alternative Communication (ARASAAC)
 provides an extensive set of pictograms with labels in many languages.
-The game has been developped with pictogram labels in Spanish. However,
+The game has been developed with pictogram labels in Spanish. However,
 English labels are also available from [ARASAAAC](http://www.arasaac.org/pictogramas_color.php).
 
 [Architecture](#architecture)\
@@ -33,7 +33,7 @@ Sample pictograms:
 Pictocatcher is composed of two parts. The first is a server which evaluates images
 with Google's [Inception](https://ai.googleblog.com/2016/03/train-your-own-image-classifier-with.html)
  image classification network. It then checks that the image's class corresponds to
- that of the selected pictogram using the technique descibed [here](#going-from-imagenet-labels-to-pictograms).
+ that of the selected pictogram using the technique described [here](#going-from-imagenet-labels-to-pictograms).
 
  <img src="pictures/system_overview.png" width="450" height="400"/>
 
@@ -60,7 +60,7 @@ App:
 
 Open the android directory with AndroidStudio.
  Change the address in [SendCaptureActivity.java:169](https://github.com/JavierAntoran/pictocatcher/blob/cdab6297b9999287ec161edc189b0e7bee0674a0/android/pictocatcher/app/src/main/java/es/unizar/cps/cav/pictocatcher/SendCaptureActivity.java#L169)
- to the adress and port where you are running the server.
+ to the address and port where you are running the server.
   You are ready to build the application and run it on an Android phone.
 
 
@@ -69,11 +69,11 @@ Open the android directory with AndroidStudio.
 <img src="pictures/relationship.png" width="350" height="100" />
 
 The inception network acts as a 1000-way classifier. However, there are more than 1000 pictograms and
- there may not be an exacy correspondance between pictograms and Imagenet
+ there may not be an exact correspondence between pictograms and Imagenet
 labels. In some cases, Imagenet classes are more detailed than pictograms.
-i.e. There are classes for many types of cat (tabby cat, egiptian cat, etc)
+i.e. There are classes for many types of cat (tabby cat, egyptian cat, etc)
 but there is only a generic cat pictogram. In other cases, a handfull of
-pictograms can fall under only one imagenet label.
+pictograms can fall under only one Imagenet label.
 
 We solve this issue by using
 [Wordnet](https://wordnet.princeton.edu), a lexical database. Wordnet defines
